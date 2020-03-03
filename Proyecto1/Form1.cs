@@ -16,6 +16,7 @@ namespace Proyecto1
         //*************************************************variables globales
         string rutaarchivo,palabra;
         List<Token> listatokens = new List<Token>();
+        List<Error_Sintactico> listaerrorsintactico = new List<Error_Sintactico>();
         List<ErrorToken> listaerrorlexico = new List<ErrorToken>();
 
 
@@ -158,7 +159,7 @@ namespace Proyecto1
                             if (char.IsLetter(codigo[contador]))
                             {
                                 columna++;
-                                palabra += palabra;
+                                palabra += codigo[contador];
                                 estado = 2;
                                 break;
                             }
@@ -208,6 +209,13 @@ namespace Proyecto1
                             {
                                 columna = 0;
                                 fila++;
+                                break;
+                            }
+                            //si es un espacio en blanco
+                            if (codigo[contador].Equals((char)32))
+                            {
+                                columna++;
+                                estado = 0;
                                 break;
                             }
                             //---------------------si es una tabulacion
@@ -389,7 +397,8 @@ namespace Proyecto1
                         {
                             columna++;
                             palabra += codigo[contador];
-                            listatokens.Add(new Token("TK_comentario", palabra, "Comentario multilinea", fila, columna));
+                            //se elimina el comentario multilinea
+                            //listatokens.Add(new Token("TK_comentario", palabra, "Comentario multilinea", fila, columna));
                             estado = 0;
                             palabra = "";
                             break;
@@ -472,7 +481,7 @@ namespace Proyecto1
                     case 14:
                         {
                             //si es un salto de linea
-                            if (codigo[contador].Equals((char)34))
+                            if (codigo[contador].Equals((char)10))
                             {
                                 columna = 0;
                                 fila++;
@@ -494,6 +503,44 @@ namespace Proyecto1
                 }//**************fin del switch
             }//********fin del for del analizador lexico
 
+            listatokens.Add(new Token("fin","","",0,0));
+            //*************************************************************************la lsita de tokens esta creada ***************************************
+            Parser sintactico = new Parser();
+
+
+            if (listaerrorlexico.Count>0)
+            {
+                MessageBox.Show("Contiene errores lexicos");
+                for (int i = 0; i < listaerrorlexico.Count; i++)
+                {
+                    MessageBox.Show(listaerrorlexico[i].lexema);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No hay errores lexicos");
+                int cantidaderrores = sintactico.parser(listatokens);
+                listaerrorsintactico = sintactico._listaerrores();
+                if (listaerrorsintactico.Count>0)
+                {
+                    MessageBox.Show("Si hay errores lexicos");
+                    for (int i = 0; i < listaerrorsintactico.Count; i++)
+                    {
+                        MessageBox.Show(listaerrorsintactico[i].caracter);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No hay errores sintacticos");
+                }
+
+
+                for (int i = 0; i < listatokens.Count; i++)
+                {
+                    //MessageBox.Show(listatokens[i].lexema);
+
+                }
+            }
 
         }
 

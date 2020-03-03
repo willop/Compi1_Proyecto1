@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 
 namespace Proyecto1
 {
-    class ErrorToken
+    class Error_Sintactico
     {
-        public string lexema, info;
+        public string caracter, descripcion;
         public int fila, columna;
-        //***********constructor******************
-        public ErrorToken(string _lexema, string _info,int _fila,int _columna)
+
+        public Error_Sintactico(string _caracter,string _descripcion,int _fila, int _columna)
         {
-            this.lexema = _lexema;
-            this.info = _info;
+            this.caracter = _caracter;
+            this.descripcion = _descripcion;
             this.fila = _fila;
             this.columna = _columna;
+
         }
     }
 }

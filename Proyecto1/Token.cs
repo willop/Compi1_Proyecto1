@@ -8,8 +8,8 @@ namespace Proyecto1
 {
     class Token
     {
-        string idtoken,lexema, tipo;
-        int fila, columna;
+        public string idtoken,lexema, tipo;
+        public int fila, columna;
 
         public Token(string _idtoken,string _lexema, string _tipo,int _fila, int _columna)
         {
