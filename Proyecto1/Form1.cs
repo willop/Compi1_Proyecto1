@@ -225,12 +225,20 @@ namespace Proyecto1
                                 break;
 
                             }
+                            if (Encoding.ASCII.GetBytes(codigo[contador].ToString())[0] > 32 && Encoding.Default.GetBytes(codigo[contador].ToString())[0] < 125)
+                            {
+                                MessageBox.Show("simbolo identificado: " + codigo[contador] + "\ncon codigo ascii: " + Encoding.Default.GetBytes(codigo[contador].ToString())[0]);
+                                columna++;
+                                listatokens.Add(new Token("TK_simbolo",codigo[contador].ToString(), "Simbolo",fila,columna));
+                                break;
+                            }
+
                             //**************************************errores ************************************
-                            else
+                             else
                             {
                                 columna++;
                                 listaerrorlexico.Add(new ErrorToken(codigo[contador].ToString(), "Caracter desconocido", fila, columna));
-                            break;
+                                break;
                             }
                         }//----------------fin estado 0
 
@@ -286,7 +294,8 @@ namespace Proyecto1
                             {
                                 contador--;
                                 estado = 12;
-                                palabra = "";
+                                //palabra = "";
+                                break;
                             }
                             //------- si viene un espacio en blanco o un salto de linea quiere decir que solo es el corchete
                             else if (codigo[contador].Equals((char)10)||codigo[contador].Equals((char)32))
@@ -295,13 +304,14 @@ namespace Proyecto1
                                 contador--;
                                 palabra = "";
                                 estado = 0;
-
+                                break;
                             }
                             else
                             {
                                 columna++;
                                 palabra += codigo[contador];
                                 estado = 30;
+                                break;
                             }
                             break;
                         }//----------fin del estado 30
@@ -443,9 +453,11 @@ namespace Proyecto1
                                 estado = 0;
                                 break;
                             }
+                            //}
                             if (codigo[contador].Equals((char)125))
                             {
                                 columna++;
+                                //MessageBox.Show("lo que contiene palabla antes de añanadir a la lista estado 12: "+palabra);
                                 palabra += codigo[contador];
                                 listatokens.Add(new Token("TK_compacto", palabra, "Cadena de texto dentro de {***}",fila,columna));
                                 palabra = "";
@@ -515,6 +527,8 @@ namespace Proyecto1
                 {
                     MessageBox.Show(listaerrorlexico[i].lexema);
                 }
+                CrearXMLErrores erroresxml = new CrearXMLErrores(listaerrorlexico);
+                HTMLErrores erroreshtml = new HTMLErrores(listaerrorlexico);
             }
             else
             {
@@ -523,7 +537,7 @@ namespace Proyecto1
                 listaerrorsintactico = sintactico._listaerrores();
                 if (listaerrorsintactico.Count>0)
                 {
-                    MessageBox.Show("Si hay errores lexicos");
+                    MessageBox.Show("Si hay errores sintacticos");
                     for (int i = 0; i < listaerrorsintactico.Count; i++)
                     {
                         MessageBox.Show(listaerrorsintactico[i].caracter);
@@ -532,14 +546,16 @@ namespace Proyecto1
                 else
                 {
                     MessageBox.Show("No hay errores sintacticos");
+                    CrearXML archivoxml = new CrearXML(listatokens);
+                    HTMLToken html = new HTMLToken(listatokens);
                 }
 
 
-                for (int i = 0; i < listatokens.Count; i++)
-                {
-                    //MessageBox.Show(listatokens[i].lexema);
+                //for (int i = 0; i < listatokens.Count; i++)
+                //{
+                //    MessageBox.Show(listatokens[i].lexema);
 
-                }
+                //}
             }
 
         }

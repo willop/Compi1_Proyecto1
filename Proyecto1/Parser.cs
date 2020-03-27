@@ -11,6 +11,7 @@ namespace Proyecto1
 
         List<Token> Listatokenslexico = new List<Token>();
         List<Error_Sintactico> Listaerrorsintactivo = new List<Error_Sintactico>();
+        List<Token> ERS = new List<Token>();
         bool primeravez = true;
         int cantidaddeerroressintacticos = 0;
         int fila = 0;
@@ -18,7 +19,7 @@ namespace Proyecto1
         int contador;
         Token tokenactual;
 
-        public int parser(List<Token>_Lista)
+        public int parser(List<Token> _Lista)
         {
             Listatokenslexico = _Lista;
             contador = 0;
@@ -76,12 +77,22 @@ namespace Proyecto1
             {
                 match("TK_id");
                 alcance();
+                return;
             }
             if (tokenactual.idtoken.Equals("TK_num"))
             {
                 match("TK_num");
                 alcance();
+                return;
             }
+            
+            if (Encoding.ASCII.GetBytes(tokenactual.lexema.ToString())[0] > 32 && Encoding.ASCII.GetBytes(tokenactual.lexema.ToString())[0] < 125)
+            {
+                match(tokenactual.idtoken);
+                alcance();
+                return;
+            }
+            
             else
             {
                 //error por que se necesia un id o un numero
@@ -133,7 +144,28 @@ namespace Proyecto1
                 match("TK_id");
                 difer();
                 match("TK_pcoma");
+                // ver las ERS
+
                 //-----aca se obtiene la ER del archivo de entrada
+                if (ERS.Count==0)
+                {
+
+                }
+                else
+                {
+                    Thompson meodoThompson = new Thompson(ERS);
+                    ARBOL.GrafoThompson grafooo = new ARBOL.GrafoThompson(ERS);
+                    /*
+                    for(int i=0; i<ERS.Count; i++){
+                        System.Windows.Forms.MessageBox.Show("parser: "+ERS[i].lexema);     
+                    }
+                    */
+                    ERS.Clear();
+                    
+                }
+                
+
+                //fin del procedimiento por ER
                 Expresion();
 
             }
@@ -147,7 +179,7 @@ namespace Proyecto1
         {
             if (tokenactual.idtoken.Equals("TK_punto"))
             {
-                //se añade
+                ERS.Add(tokenactual);
                 match("TK_punto");
                 valI();
                 valD();
@@ -155,23 +187,28 @@ namespace Proyecto1
             }
             else if (tokenactual.idtoken.Equals("TK_|"))
             {
+                ERS.Add(tokenactual);
                 match("TK_|");
+
                 valI();
                 valD();
 
             }
             else if (tokenactual.idtoken.Equals("TK_*"))
             {
+                ERS.Add(tokenactual);
                 match("TK_*");
                 valI();
             }
             else if (tokenactual.idtoken.Equals("TK_?"))
             {
+                ERS.Add(tokenactual);
                 match("TK_?");
                 valI();
             }
             else if (tokenactual.idtoken.Equals("TK_+"))
             {
+                ERS.Add(tokenactual);
                 match("TK_+");
                 valI();
             }
@@ -185,19 +222,19 @@ namespace Proyecto1
         {
             if (tokenactual.idtoken.Equals("TK_num"))
             {
-                //se agrega
+                ERS.Add(tokenactual);
                 match("TK_num");
 
             }
             if (tokenactual.idtoken.Equals("TK_cadena"))
             {
-                //se agrega
+                ERS.Add(tokenactual);
                 match("TK_cadena");
 
             }
             if (tokenactual.idtoken.Equals("TK_compacto"))
             {
-                //se agrega
+                ERS.Add(tokenactual);
                 match("TK_compacto");
 
             }
@@ -211,19 +248,19 @@ namespace Proyecto1
         {
             if (tokenactual.idtoken.Equals("TK_num"))
             {
-                //se agrega
+                ERS.Add(tokenactual);
                 match("TK_num");
 
             }
             if (tokenactual.idtoken.Equals("TK_cadena"))
             {
-                //se agrega
+                ERS.Add(tokenactual);
                 match("TK_cadena");
 
             }
             if (tokenactual.idtoken.Equals("TK_compacto"))
             {
-                //se agrega
+                ERS.Add(tokenactual);
                 match("TK_compacto");
 
             }
@@ -253,12 +290,14 @@ namespace Proyecto1
             if (_token_enviado != tokenactual.idtoken)
             {
                 Listaerrorsintactivo.Add(new Error_Sintactico(tokenactual.idtoken,"Se esperaba: "+_token_enviado,tokenactual.fila,tokenactual.columna));
+                System.Windows.Forms.MessageBox.Show("error sintactico: "+tokenactual.lexema+"  se esperaba:"+_token_enviado+" fila:"+tokenactual.fila+"  columna:"+tokenactual.columna);
                 contador++;
                 cantidaddeerroressintacticos++;
                 tokenactual = Listatokenslexico[contador];
             }
             else if (_token_enviado!="fin")
             {
+                //System.Windows.Forms.MessageBox.Show(_token_enviado);
                 //no hay error sintactico
                 contador++;
                 tokenactual = Listatokenslexico[contador];
@@ -273,5 +312,9 @@ namespace Proyecto1
             return Listaerrorsintactivo;
         }
 
+
+        public List<Token> getERS(){
+            return ERS;
+        }
     }
 }
